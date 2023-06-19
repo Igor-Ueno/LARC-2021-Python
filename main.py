@@ -42,21 +42,25 @@ if __name__ == "__main__":
     referee = Referee(mray, "224.5.23.2", 10003)
 
     # Initialize all  objects
-    robot0 = Robot(0, actuator, mray)
-    robot1 = Robot(1, actuator, mray)
-    robot2 = Robot(2, actuator, mray)
-    robot3 = Robot(3, actuator, mray)
-    robot4 = Robot(4, actuator, mray)
+    num_robots = 5
 
-    robotEnemy0 = Robot(0, actuator, not mray)
-    robotEnemy1 = Robot(1, actuator, not mray)
-    robotEnemy2 = Robot(2, actuator, not mray)
-    robotEnemy3 = Robot(3, actuator, not mray)
-    robotEnemy4 = Robot(4, actuator, not mray)
+    robots = []
+    for i in range(num_robots):
+        robot = Robot(i, actuator, mray)
+        robots.append(robot)
+
+    enemy_robots = []
+    for i in range(num_robots):
+        robot = Robot(i, actuator, not mray)
+        enemy_robots.append(robot)
+
+    # for robot in robots:
+    #     robot.set_enemies(enemy_robots)
+    #     robot.set_friends(robots.copy())
 
     ball = Ball()
 
-    strategy = Strategy(robot0, robot1, robot2, robot3, robot4, robotEnemy0, robotEnemy1, robotEnemy2, robotEnemy3, robotEnemy4, ball, mray)
+    strategy = Strategy(robots, enemy_robots, ball, mray)
 
     # Main infinite loop
     while True:
@@ -74,17 +78,13 @@ if __name__ == "__main__":
         data_ball = field["ball"]               #Salva os dados da bola
 
         # Atualiza em cada objeto do campo os dados da visão
-        robot0.simGetPose(data_our_bot[0])
-        robot1.simGetPose(data_our_bot[1])
-        robot2.simGetPose(data_our_bot[2])
-        robot3.simGetPose(data_our_bot[3])
-        robot4.simGetPose(data_our_bot[4])
-        robotEnemy0.simGetPose(data_their_bots[0])
-        robotEnemy1.simGetPose(data_their_bots[1])
-        robotEnemy2.simGetPose(data_their_bots[2])
-        robotEnemy3.simGetPose(data_their_bots[3])
-        robotEnemy4.simGetPose(data_their_bots[4])
-        ball.simGetPose(data_ball)
+        for index, robot in enumerate(robots):
+            robot.set_simulator_data(data_our_bot[index])
+        
+        for index, robot in enumerate(enemy_robots):
+            robot.set_simulator_data(data_their_bots[index])
+
+        ball.set_simulator_data(data_ball)
 
         if ref_data["game_on"]:
             # Se o modo de jogo estiver em "Game on"
